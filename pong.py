@@ -26,7 +26,7 @@ def overlapping(a, b):
 
 def moveball():
 	canvas.pack()
-	global speedx, speedy
+	global speedx, speedy, score
 	(x, y, a, b) = canvas.coords(ball)
 	if x <= 0 or a >= width:
 		speedx = -speedx
@@ -39,6 +39,9 @@ def moveball():
 		badzone = canvas.coords(nogozone)
 		if (p <= c <= r):
 			speedy = -speedy - 1
+			score += 10
+			txt = 'Score: ' + str(score)
+			canvas.itemconfigure(scoreText, text = txt)
 		elif overlapping(ballpos, badzone):
 			canvas.create_image(640, 360, image = gameover)
 			return
@@ -66,6 +69,9 @@ ball = canvas.create_oval(630, 360, 650, 380, fill = 'red', outline = 'white', w
 nogozone = canvas.create_rectangle(0, 626, 1280, 720, fill = 'green')
 speedx = 2
 speedy = 2
+score = 0
+txt = 'Score: ' + str(score)
+scoreText = canvas.create_text(width / 2, 650, fill = 'white', font = 'Arial 20 italic bold', text = txt)
 
 canvas.bind('<Left>', leftkey)
 canvas.bind('<Right>', rightkey)
