@@ -1,4 +1,5 @@
 from tkinter import Tk, Canvas, PhotoImage
+import random
 
 width = 1280 # width of world
 height = 720 # height of world
@@ -38,7 +39,8 @@ def moveball():
 		ballpos = canvas.coords(ball)
 		badzone = canvas.coords(nogozone)
 		if (p <= c <= r):
-			speedy = -speedy - 1
+			speedx = speedx + random.randint(0, 2)
+			speedy = -speedy - random.randint(0, 2)
 			score += 10
 			txt = 'Score: ' + str(score)
 			canvas.itemconfigure(scoreText, text = txt)
