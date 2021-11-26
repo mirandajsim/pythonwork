@@ -4,6 +4,7 @@ import random
 width = 1280 # width of world
 height = 720 # height of world
 
+# Boss key (click tab to activate/deactivate)
 def bosskey(event):
     global bossflag
     pausegame()
@@ -16,14 +17,17 @@ def bosskey(event):
         bosskeywindow.deiconify()
         window.withdraw()
 
+# Starts cheat code one (hold mouse down to increase platform movement)
 def cheatcode1start(event):
     global cheatcodeone
     cheatcodeone = True
 
+# Stops cheat code one (release mouse to resume usual movement)
 def cheatcode1stop(event):
     global cheatcodeone
     cheatcodeone = False
 
+# Cheat code two (add 10 points every time return is hit)
 def cheatcode2(event):
     global score
     cheatcodetwo = True
@@ -34,6 +38,7 @@ def cheatcode2(event):
     else:
         cheatcodetwo = False
 
+# Move platform left
 def leftkey(event):
     global direction, pause
     if pause is False:
@@ -47,6 +52,7 @@ def leftkey(event):
                 edge = min(x, 60)
                 canvas.move(platform, -edge, 0)
 
+# Move platform right
 def rightkey(event):
     global direction, pause
     if pause is False:
@@ -60,6 +66,7 @@ def rightkey(event):
                 edge = min(width - a, 60)
                 canvas.move(platform, edge, 0)
 
+# Pauses game
 def pausegame():
     global pause
     if pause is True:
@@ -67,11 +74,13 @@ def pausegame():
     else:
         pause = True
 
+# Collision detection
 def overlapping(a, b):
 	if a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]:
 		return True
 	return False
 
+# Ball movement (main gameplay)
 def moveball():
 	canvas.pack()
 	global speedx, speedy, score, pause
@@ -98,6 +107,7 @@ def moveball():
 		canvas.move(ball, speedx, speedy)
 	canvas.after(20, moveball)
 
+# Boss key set up
 def setbosskey(w, h):
     bosskeywindow = Toplevel()
     bosskeywindow.title("Document1")
@@ -108,6 +118,7 @@ def setbosskey(w, h):
     bosskeywindow.geometry('%dx%d+%d+%d' % (w, h, x, y))  # bosskey size
     return bosskeywindow
 
+# Star design
 def createstars():
     for i in range(400):
         x = random.randint(1, 1279)
@@ -118,6 +129,7 @@ def createstars():
         tmp_star = canvas.create_oval(xy, fill=c[f])
         star.append(tmp_star)
 
+# Main window set up
 def setwindowdimensions(w, h):
     window = Tk()
     window.title("Game")
@@ -128,6 +140,7 @@ def setwindowdimensions(w, h):
     window.geometry('%dx%d+%d+%d' % (w, h, x, y))  # window size
     return window
 
+# Misc. variables for basic gameplay
 window = setwindowdimensions(width, height)
 canvas = Canvas(window, bg = 'black', width = width, height = height)
 canvas.pack()
@@ -139,16 +152,23 @@ speedy = 2
 score = 0
 txt = 'Score: ' + str(score)
 scoretext = canvas.create_text(width / 2, 650, fill = 'white', font = 'Arial 20 italic bold', text = txt)
+direction = 'right'
 
+# Images
+gameover = PhotoImage(file = "gameover.png")
+
+# Star variables
 star = []
 c = ['white', '#fefefe', '#dfdfdf']
 lead = 0
 
+# Pause variables
 pause = False
 pauseit = Button(window, text = 'Play/Pause', command = pausegame, anchor = 'n')
 pauseit.configure(activebackground = 'white')
 pausethis = canvas.create_window(1182, 23, anchor = 'nw', window = pauseit)
 
+# Boss key variables
 bosskeywindow = setbosskey(width, height)
 boss = Canvas(bosskeywindow, bg = 'black', width = width, height = height)
 boss.pack()
@@ -157,8 +177,10 @@ document = boss.create_image(640, 360, image = loremipsum)
 bosskeywindow.withdraw()
 bossflag = False
 
+# Cheat code variables
 cheatcodeone = False
 
+# Key binds
 canvas.bind('<Left>', leftkey)
 canvas.bind('<Right>', rightkey)
 canvas.bind('<ButtonPress-1>', cheatcode1start)
@@ -166,12 +188,8 @@ canvas.bind('<ButtonRelease-1>', cheatcode1stop)
 canvas.bind('<Return>', cheatcode2)
 canvas.bind('<Tab>', bosskey)
 bosskeywindow.bind('<Tab>', bosskey)
-
 canvas.focus_set()
 
-direction = 'right'
-
-gameover = PhotoImage(file = "gameover.png")
 
 createstars()
 moveball()
