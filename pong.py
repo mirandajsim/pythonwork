@@ -12,6 +12,8 @@ def changeplatformcolour():
     randomcolournumber = random.randint(0, len(colours) - 1)
     randomcolour = colours[randomcolournumber]
     canvas.itemconfig(platform, fill=randomcolour)
+    colourtxt = 'Look at all the colours!'
+    canvas.itemconfigure(info, text=colourtxt)
 
 # Changes colour of the ball
 def changeballcolour():
@@ -19,6 +21,8 @@ def changeballcolour():
     randomcolournumber = random.randint(0, len(colours) - 1)
     randomcolour = colours[randomcolournumber]
     canvas.itemconfig(ball, fill=randomcolour)
+    colourtxt = 'Look at all the colours!'
+    canvas.itemconfigure(info, text=colourtxt)
 
 # Boss key (click tab to activate/deactivate)
 def bosskey(event):
@@ -26,10 +30,14 @@ def bosskey(event):
     pausegame()
     if bossflag is True:
         bossflag = False
+        nobosstxt = 'Welcome back.'
+        canvas.itemconfigure(info, text=nobosstxt)
         bosskeywindow.withdraw()
         window.deiconify()
     else:
         bossflag = True
+        bosstxt = 'Boss key activated. Get back to work.'
+        canvas.itemconfigure(info, text=bosstxt)
         bosskeywindow.deiconify()
         window.withdraw()
 
@@ -37,22 +45,30 @@ def bosskey(event):
 def cheatcode1start(event):
     global cheatcodeone
     cheatcodeone = True
+    cheatcodeonetxt = 'Cheat code 1 activated!'
+    canvas.itemconfigure(info, text=cheatcodeonetxt)
 
 # Stops cheat code one (release mouse to resume usual movement)
 def cheatcode1stop(event):
     global cheatcodeone
     cheatcodeone = False
+    stopcheatcodetxt = ''
+    canvas.itemconfigure(info, text=stopcheatcodetxt)
 
 # Cheat code two (add 10 points every time return is hit)
 def cheatcode2(event):
     global score
     cheatcodetwo = True
     if cheatcodetwo is True:
+        cheatcodetwotxt = 'Cheat code 2 activated!'
+        canvas.itemconfigure(info, text=cheatcodetwotxt)
         score += 10
         txt = 'Score: ' + str(score)
         canvas.itemconfigure(scoretext, text=txt)
     else:
         cheatcodetwo = False
+        stopcheatcodetxt = ''
+        canvas.itemconfigure(info, text=stopcheatcodetxt)
 
 # Move platform left
 def leftkey(event):
@@ -87,8 +103,12 @@ def pausegame():
     global pause
     if pause is True:
         pause = False
+        unpausetxt = 'Game resumed.'
+        canvas.itemconfigure(info, text=unpausetxt)
     else:
         pause = True
+        pausedtxt = 'Game paused.'
+        canvas.itemconfigure(info, text=pausedtxt)
 
 # Save progress
 def savegame():
@@ -99,7 +119,8 @@ def savegame():
 	file.close()
 	time.sleep(1)
 	pausegame()
-	print('Save game loaded.')
+	savetxt = 'Game saved succesfully.'
+	canvas.itemconfigure(info, text=savetxt)
 
 # Retrieve saved game
 def retrievegame():
@@ -114,8 +135,11 @@ def retrievegame():
 		file.close()
 		time.sleep(1)
 		pausegame()
+		retrievetxt = 'Game loaded succesfully.'
+		canvas.itemconfigure(info, text=retrievetxt)
 	except FileNotFoundError:
-		print('Error')
+		nofiletxt = 'Error: No saved games found.'
+		canvas.itemconfigure(info, text=nofiletxt)
 
 # Destroys entry page
 def submitleaderboard(initials):
@@ -305,6 +329,8 @@ lead = 0
 
 # Pause variables
 pause = False
+paused = ''
+info = canvas.create_text(width / 2, 675, fill='white', font='Arial 20 italic', text=paused)
 pauseit = Button(window, text = 'Play/Pause', command = pausegame, anchor = 'n')
 pauseit.configure(activebackground = 'white')
 pausethis = canvas.create_window(1182, 23, anchor = 'nw', window = pauseit)
