@@ -112,28 +112,36 @@ def pausegame():
 
 # Save progress
 def savegame():
-	global score
-	pausegame()
-	file = open('savegame.txt', 'wt')
-	file.write(str(score))
-	file.close()
-	time.sleep(1)
-	pausegame()
-	savetxt = 'Game saved succesfully.'
-	canvas.itemconfigure(info, text=savetxt)
+    global score, speedx, speedy
+    pausegame()
+    tosave = [str(score), str(speedx), str(speedy)]
+    file = open('savegame.txt', 'wt')
+    for i in tosave:
+        file.write(i)
+        file.write(',')
+    file.close()
+    time.sleep(1)
+    pausegame()
+    savetxt = 'Game saved succesfully.'
+    canvas.itemconfigure(info, text=savetxt)
 
 # Retrieve saved game
 def retrievegame():
 	global score
 	try:
 		pausegame()
+		data = []
 		file = open('savegame.txt', 'r')
-		score = file.read()
-		score = int(score)
+		saved = file.read()
+		individual = saved.split(',')
+		data.append(individual)
+		score = int(data[0][0])
+		speedx = int(data[0][1])
+		speedy = int(data[0][2])
 		txt = 'Score: ' + str(score)
 		canvas.itemconfigure(scoretext, text = txt)
 		file.close()
-		time.sleep(1)
+		time.sleep(3)
 		pausegame()
 		retrievetxt = 'Game loaded succesfully.'
 		canvas.itemconfigure(info, text=retrievetxt)
