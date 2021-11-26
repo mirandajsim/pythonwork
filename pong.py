@@ -6,6 +6,20 @@ import pickle
 width = 1280 # width of world
 height = 720 # height of world
 
+# Changes platform colour
+def changeplatformcolour():
+    global colours
+    randomcolournumber = random.randint(0, len(colours) - 1)
+    randomcolour = colours[randomcolournumber]
+    canvas.itemconfig(platform, fill=randomcolour)
+
+# Changes colour of the ball
+def changeballcolour():
+    global colours
+    randomcolournumber = random.randint(0, len(colours) - 1)
+    randomcolour = colours[randomcolournumber]
+    canvas.itemconfig(ball, fill=randomcolour)
+
 # Boss key (click tab to activate/deactivate)
 def bosskey(event):
     global bossflag
@@ -320,6 +334,23 @@ bossflag = False
 
 # Cheat code variables
 cheatcodeone = False
+
+# Change colour variables
+colours = ['red', 'yellow', 'green', 'blue', 'orange', 'white', 'gray', 'gold',
+           'magenta', 'pink', 'purple', 'plum', 'sea green', 'tomato',
+           'violet', 'blanched almond', 'brown', 'cadet blue', 'chartreuse',
+           'coral', 'cornflower blue', 'cornsilk', 'cyan', 'dark goldenrod',
+           'dark olive green', 'deep sky blue', 'firebrick', 'honeydew',
+           'hot pink', 'indian red', 'ivory', 'khaki', 'lavender blush',
+           'lawn green', 'lemon chiffon', 'light steel blue', 'linen',
+           'maroon', 'medium violet red', 'midnight blue', 'mint cream',
+           'misty rose', 'moccasin', 'navajo white', 'old lace', 'olive drab',
+           'orchid', 'papaya whip', 'peach puff', 'rosy brown', 'seashell',
+           'sienna', 'slate gray', 'thistle', 'wheat']
+alterball = Button(window, text='Change Ball Colour', command=changeballcolour)
+alterball.place(x=1133, y=98)
+alterplatform = Button(window, text='Change Platform Colour', command=changeplatformcolour)
+alterplatform.place(x=1103, y=123)
 
 # Key binds
 canvas.bind('<Left>', leftkey)
