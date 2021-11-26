@@ -16,23 +16,49 @@ def bosskey(event):
         bosskeywindow.deiconify()
         window.withdraw()
 
+def cheatcode1start(event):
+    global cheatcodeone
+    cheatcodeone = True
+
+def cheatcode1stop(event):
+    global cheatcodeone
+    cheatcodeone = False
+
+def cheatcode2(event):
+    global score
+    cheatcodetwo = True
+    if cheatcodetwo is True:
+        score += 10
+        txt = 'Score: ' + str(score)
+        canvas.itemconfigure(scoretext, text=txt)
+    else:
+        cheatcodetwo = False
+
 def leftkey(event):
-	global direction, pause
-	if pause is False:
-		direction = 'left'
-		(x, y, a, b) = canvas.coords(platform)
-		if a > 0:
-			edge = min(x, 10)
-			canvas.move(platform, -edge, 0)
+    global direction, pause
+    if pause is False:
+        direction = 'left'
+        (x, y, a, b) = canvas.coords(platform)
+        if a > 0:
+            if cheatcodeone is False:
+                edge = min(x, 20)
+                canvas.move(platform, -edge, 0)
+            else:
+                edge = min(x, 60)
+                canvas.move(platform, -edge, 0)
 
 def rightkey(event):
-	global direction, pause
-	if pause is False:
-		direction = 'right'
-		(x, y, a, b) = canvas.coords(platform)
-		if a < width:
-			edge = min(width - a, 10)
-			canvas.move(platform, edge, 0)
+    global direction, pause
+    if pause is False:
+        direction = 'right'
+        (x, y, a, b) = canvas.coords(platform)
+        if a < width:
+            if cheatcodeone is False:
+                edge = min(width - a, 20)
+                canvas.move(platform, edge, 0)
+            else:
+                edge = min(width - a, 60)
+                canvas.move(platform, edge, 0)
 
 def pausegame():
     global pause
@@ -65,15 +91,12 @@ def moveball():
 				speedy = -speedy - random.randint(0, 2)
 				score += 10
 				txt = 'Score: ' + str(score)
-				canvas.itemconfigure(scoreText, text = txt)
+				canvas.itemconfigure(scoretext, text = txt)
 			elif overlapping(ballpos, badzone):
 				canvas.create_image(640, 360, image = gameover)
 				return
 		canvas.move(ball, speedx, speedy)
 	canvas.after(20, moveball)
-
-def moveplatform():
-	canvas.pack()
 
 def setbosskey(w, h):
     bosskeywindow = Toplevel()
@@ -107,7 +130,7 @@ def setwindowdimensions(w, h):
 
 window = setwindowdimensions(width, height)
 canvas = Canvas(window, bg = 'black', width = width, height = height)
-
+canvas.pack()
 platform = canvas.create_rectangle(550, 600, 730, 625, fill = 'blue', outline = 'white')
 ball = canvas.create_oval(630, 360, 650, 380, fill = 'red', outline = 'white', width = 2)
 nogozone = canvas.create_rectangle(0, 626, 1280, 720, fill = 'green')
@@ -115,7 +138,11 @@ speedx = 2
 speedy = 2
 score = 0
 txt = 'Score: ' + str(score)
-scoreText = canvas.create_text(width / 2, 650, fill = 'white', font = 'Arial 20 italic bold', text = txt)
+scoretext = canvas.create_text(width / 2, 650, fill = 'white', font = 'Arial 20 italic bold', text = txt)
+
+star = []
+c = ['white', '#fefefe', '#dfdfdf']
+lead = 0
 
 pause = False
 pauseit = Button(window, text = 'Play/Pause', command = pausegame, anchor = 'n')
@@ -130,8 +157,13 @@ document = boss.create_image(640, 360, image = loremipsum)
 bosskeywindow.withdraw()
 bossflag = False
 
+cheatcodeone = False
+
 canvas.bind('<Left>', leftkey)
 canvas.bind('<Right>', rightkey)
+canvas.bind('<ButtonPress-1>', cheatcode1start)
+canvas.bind('<ButtonRelease-1>', cheatcode1stop)
+canvas.bind('<Return>', cheatcode2)
 canvas.bind('<Tab>', bosskey)
 bosskeywindow.bind('<Tab>', bosskey)
 
@@ -141,6 +173,8 @@ direction = 'right'
 
 gameover = PhotoImage(file = "gameover.png")
 
-moveplatform()
+createstars()
 moveball()
+
 window.mainloop()
+
