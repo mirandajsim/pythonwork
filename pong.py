@@ -1,6 +1,7 @@
 from tkinter import *
 import random
 import time
+import pickle
 
 width = 1280 # width of world
 height = 720 # height of world
@@ -102,6 +103,101 @@ def retrievegame():
 	except FileNotFoundError:
 		print('Error')
 
+# Destroys entry page
+def submitleaderboard(initials):
+    global leaderboardprompt
+    submitinitials(initials)
+    leaderboardprompt.destroy()
+
+# Gets information for leaderboard
+def leaderboardentry():
+    global score, lead, leaderboardprompt
+    while (lead == 0):
+        lead += 1
+        leaderboardprompt = Toplevel(window)
+        leaderboardprompt.geometry('423x238+536+342')
+        leaderboardprompt.title('Game Leaderboard Entry')
+        label = Label(leaderboardprompt, text='Enter your initials:', font=('Arial Bold', 23))
+        label.pack()
+        note = Label(leaderboardprompt, text='NOTE: if you enter more than two characters,\nonly the first two will be used.\n', font=('Arial', 14))
+        note.pack()
+        initialsentry = Entry(leaderboardprompt, width=2, bd=3)
+        initialsentry.pack()
+        submitscore = Button(leaderboardprompt, text='Submit Score', command=lambda: submitleaderboard(initialsentry.get()))
+        submitscore.pack(pady=21)
+
+# Ensures only two characters are submitted to leaderboard
+def twoinitials(x=''):
+    return x[:2]
+
+# Checks user enters initials correctly
+def submitinitials(x=''):
+    global leaderboard
+    if x != '':
+        x = twoinitials(x)
+        x = x.upper()
+        newscore = [x, score]
+        leaderboard.append(newscore)
+        leaderboardhistory()
+    else:
+        print('Please enter a valid set of initials.')
+
+# Gets leaderboard history from data file
+def leaderboardhistory():
+    global leaderboard, highscores
+    try:
+        with open('leaderboard.data', 'rb') as filehandle:
+            highscores = (pickle.load(filehandle))
+            for i in range(0, len(leaderboard)):
+                highscores.append(leaderboard[i])
+    except FileNotFoundError:
+        highscores = leaderboard
+    finalleaderboard()
+
+# Sort leaderboard by score function
+def sort(board):
+    l = len(board)
+    for x in range(0, l):
+        for y in range(0, l-x-1):
+            if (board[y][1] < board[y+1][1]):
+                ldb = board[y]
+                board[y] = board[y + 1]
+                board[y + 1] = ldb
+    return board[:5]
+
+# Sort top 5 scores only
+def sortboard():
+    global highscores
+    sort(highscores)
+    return highscores[:5]
+
+# Generate final leaderboard
+def finalleaderboard():
+    global highscores, finalscores, end
+    end.config(image='')
+    finalscores = sortboard()
+    canvas.create_rectangle(0, 626, 1280, 720, fill='green')
+    canvas.create_rectangle(0, 0, 1280, 626, fill='black')
+    canvas.create_rectangle(550, 600, 730, 625, fill='blue', outline='white')
+    canvas.create_oval(630, 580, 650, 600, fill='red', outline='white', width=2)
+    canvas.create_text(640, 75, fill='white', font='Arial 48 bold', text='LEADERBOARD')
+    canvas.create_text(550, 150, fill='white', font='Arial 32 bold', text='Player')
+    canvas.create_text(730, 150, fill='white', font='Arial 32 bold', text='Score')
+    canvas.create_text(width / 2, 675, fill='white', font='Arial 20 italic', text='If submitting a current score, wait a few seconds after the entry window closes for the board to refresh.')
+    for i in range(0, len(finalscores)):
+        playerentry = finalscores[i][0]
+        scoreentry = str(finalscores[i][1])
+        canvas.create_text(550, 150 + (75 * (i + 1)), fill='white', font='Arial 20', text=playerentry)
+        canvas.create_text(730, 150 + (75 * (i + 1)), fill='white', font='Arial 20', text=scoreentry)
+    saveleaderboard()
+
+# Save leaderboard data for next time
+def saveleaderboard():
+    global finalscores
+    with open('leaderboard.data', 'wb') as filehandle:
+        pickle.dump(finalscores, filehandle)
+        print('Leaderboard saved.')
+
 # Collision detection
 def overlapping(a, b):
 	if a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]:
@@ -130,8 +226,9 @@ def moveball():
 				txt = 'Score: ' + str(score)
 				canvas.itemconfigure(scoretext, text = txt)
 			elif overlapping(ballpos, badzone):
-				canvas.create_image(640, 360, image = gameover)
-				return
+				end.place(x=0, y=0)
+				time.sleep(1)
+				leaderboardentry()
 		canvas.move(ball, speedx, speedy)
 	canvas.after(20, moveball)
 
@@ -184,6 +281,8 @@ direction = 'right'
 
 # Images
 gameover = PhotoImage(file = "gameover.png")
+end = Label(window, image=gameover)
+end.pack()
 
 # Star variables
 star = []
@@ -201,6 +300,14 @@ save = Button(window, text = 'Save Progress', command = savegame)
 save.place(x = 1161, y = 48)
 retrieve = Button(window, text = 'Retrieve Game', command = retrievegame)
 retrieve.place(x = 1160, y = 73)
+
+# Leaderboard variables
+lead = 0
+leaderboard = []
+highscores = []
+finalscores = []
+viewleaderboard = Button(window, text='Forfeit Game / Submit Current\nScore / View Leaderboard', command=leaderboardhistory)
+viewleaderboard.place(x=1067, y=148)
 
 # Boss key variables
 bosskeywindow = setbosskey(width, height)
@@ -224,9 +331,7 @@ canvas.bind('<Tab>', bosskey)
 bosskeywindow.bind('<Tab>', bosskey)
 canvas.focus_set()
 
-
 createstars()
 moveball()
 
 window.mainloop()
-
