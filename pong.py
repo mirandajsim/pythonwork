@@ -1,5 +1,6 @@
 from tkinter import *
 import random
+import time
 
 width = 1280 # width of world
 height = 720 # height of world
@@ -73,6 +74,33 @@ def pausegame():
         pause = False
     else:
         pause = True
+
+# Save progress
+def savegame():
+	global score
+	pausegame()
+	file = open('savegame.txt', 'wt')
+	file.write(str(score))
+	file.close()
+	time.sleep(1)
+	pausegame()
+	print('Save game loaded.')
+
+# Retrieve saved game
+def retrievegame():
+	global score
+	try:
+		pausegame()
+		file = open('savegame.txt', 'r')
+		score = file.read()
+		score = int(score)
+		txt = 'Score: ' + str(score)
+		canvas.itemconfigure(scoretext, text = txt)
+		file.close()
+		time.sleep(1)
+		pausegame()
+	except FileNotFoundError:
+		print('Error')
 
 # Collision detection
 def overlapping(a, b):
@@ -167,6 +195,12 @@ pause = False
 pauseit = Button(window, text = 'Play/Pause', command = pausegame, anchor = 'n')
 pauseit.configure(activebackground = 'white')
 pausethis = canvas.create_window(1182, 23, anchor = 'nw', window = pauseit)
+
+# Save/retrieve game buttons
+save = Button(window, text = 'Save Progress', command = savegame)
+save.place(x = 1161, y = 48)
+retrieve = Button(window, text = 'Retrieve Game', command = retrievegame)
+retrieve.place(x = 1160, y = 73)
 
 # Boss key variables
 bosskeywindow = setbosskey(width, height)
